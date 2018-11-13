@@ -9,7 +9,8 @@ Function Get-NlbCluster {
 
 Function Get-NlbClusterNode {
     Param (
-        [Parameter(ValueFromPipeline = $true)]
+        [Parameter(ValueFromPipeline = $true,
+        ValueFromPipelineByPropertyName=$true)]
         $InputObject,
         $NodeName
     )
@@ -20,7 +21,9 @@ Function Get-NlbClusterNode {
 Function Stop-NlbClusterNode {
     Param (
         [Parameter(ValueFromPipeline = $true)]
-        $InputObject
+        $InputObject,
+        [Switch] $Drain,
+        $Timeout
     )
 
     Throw "Get-NlbClusterNode not implemented."

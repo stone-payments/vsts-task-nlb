@@ -58,7 +58,7 @@ Function ConnectCluster {
 }
 
 Function ListClusterNodes {
-    $script:cluster | Get-NlbClusterNode;
+    Get-NlbClusterNode -InputObject $script:cluster;
 }
 
 Function GetClusterNode {
@@ -67,11 +67,8 @@ Function GetClusterNode {
     )
 
     Log "Searching for node $($nodeName)";
-    # # # $local:node = ($script:cluster | Get-NlbClusterNode $nodeName);
-    # $local:node = ($script:cluster | Get-NlbClusterNode -NodeName $nodeName);
-    $local:node = ($script:cluster | Get-NlbClusterNode);
-    # $local:node = (Get-NlbClusterNode -NodeName $nodeName);
-    # # # If (-Not $local:node) { Throw "Node not found."; }
+    $local:node = (Get-NlbClusterNode -InputObject $script:cluster -NodeName $nodeName);
+    If (-Not $local:node) { Throw "Node not found."; }
     
     Return $local:node;
 }
@@ -88,14 +85,14 @@ Function StopClusterNode {
     Log "Stopping node $($nodeName)...";
     If ($drain) {
         If ($drainStopTimeout -Eq 0) {
-            $local:node | Stop-NlbClusterNode -Drain;
+            Stop-NlbClusterNode -InputObject $local:node -Drain;
         }
         Else {
-            $local:node | Stop-NlbClusterNode -Drain -Timeout $drainStopTimeout;
+            Stop-NlbClusterNode -InputObject $local:node -Drain -Timeout $drainStopTimeout;
         }
     }
     Else {
-        $local:node | Stop-NlbClusterNode;
+        Stop-NlbClusterNode -InputObject $local:node;
     }
 }
 
@@ -107,7 +104,7 @@ Function StartClusterNode {
     $local:node = GetClusterNode -NodeName $nodeName;
 
     Log "Starting node $($nodeName)...";
-    $local:node | Start-NlbClusterNode;
+    Start-NlbClusterNode -InputObject $local:node;
 }
 
 Function Log
