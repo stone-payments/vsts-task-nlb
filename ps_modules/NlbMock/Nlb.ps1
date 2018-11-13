@@ -22,6 +22,7 @@ Function Stop-NlbClusterNode {
     Param (
         [Parameter(ValueFromPipeline = $true)]
         $InputObject,
+        $HostName,
         [Switch] $Drain,
         $Timeout
     )
@@ -32,7 +33,8 @@ Function Stop-NlbClusterNode {
 Function Start-NlbClusterNode {
     Param (
         [Parameter(ValueFromPipeline = $true)]
-        $InputObject
+        $InputObject,
+        $HostName
     )
 
     Throw "Get-NlbClusterNode not implemented."

@@ -1,8 +1,6 @@
 [CmdletBinding()]
 Param([Switch] $dotSourceOnly)
 
-$script:cluster = $null;
-
 Function Main () {
 
     # For more information on the VSTS Task SDK:
@@ -11,7 +9,6 @@ Function Main () {
 
     Try {
         
-        $clusterName = Get-VstsInput -Name "ClusterName" -Require;
         $command = Get-VstsInput -Name "Command" -Require;
         If ($command -Eq "StopClusterNode" -Or $command -Eq "StartClusterNode") {
             $nodeName = Get-VstsInput -Name "NodeName" -Require;
@@ -25,14 +22,8 @@ Function Main () {
             }
         }
 
-        # Connects to the cluster
-        ConnectCluster -ClusterName $clusterName;
-        
         # Executes the selected operation.
-        If ($command -Eq "ListClusterNodes") {
-            ListClusterNodes;
-        }
-        ElseIf ($command -Eq "StopClusterNode") {
+        If ($command -Eq "StopClusterNode") {
             StopClusterNode -NodeName $nodeName -Drain $drainStop -DrainStopTimeout $drainStopTimeout;
         }
         ElseIf ($command -Eq "StartClusterNode") {
@@ -49,30 +40,6 @@ Function Main () {
     }
 }
 
-Function ConnectCluster {
-    Param (
-        $clusterName
-    )
-
-    $script:cluster = Get-NlbCluster $clusterName;
-}
-
-Function ListClusterNodes {
-    Get-NlbClusterNode -InputObject $script:cluster;
-}
-
-Function GetClusterNode {
-    Param (
-        $nodeName
-    )
-
-    Log "Searching for node $($nodeName)";
-    $local:node = (Get-NlbClusterNode -InputObject $script:cluster -NodeName $nodeName);
-    If (-Not $local:node) { Throw "Node not found."; }
-    
-    Return $local:node;
-}
-
 Function StopClusterNode {
     Param (
         $nodeName,
@@ -80,19 +47,17 @@ Function StopClusterNode {
         $drainStopTimeout
     )
 
-    $local:node = GetClusterNode -NodeName $nodeName;
-
     Log "Stopping node $($nodeName)...";
     If ($drain) {
         If ($drainStopTimeout -Eq 0) {
-            Stop-NlbClusterNode -InputObject $local:node -Drain;
+            Stop-NlbClusterNode -HostName $nodeName -Drain;
         }
         Else {
-            Stop-NlbClusterNode -InputObject $local:node -Drain -Timeout $drainStopTimeout;
+            Stop-NlbClusterNode -HostName $nodeName -Drain -Timeout $drainStopTimeout;
         }
     }
     Else {
-        Stop-NlbClusterNode -InputObject $local:node;
+        Stop-NlbClusterNode -HostName $nodeName;
     }
 }
 
@@ -101,10 +66,8 @@ Function StartClusterNode {
         $nodeName
     )
 
-    $local:node = GetClusterNode -NodeName $nodeName;
-
     Log "Starting node $($nodeName)...";
-    Start-NlbClusterNode -InputObject $local:node;
+    Start-NlbClusterNode -HostName $nodeName;
 }
 
 Function Log
