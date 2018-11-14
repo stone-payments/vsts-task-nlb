@@ -4,24 +4,23 @@
     "friendlyName": "Windows NLB Cluster Manager",
     "description": "Manages a Windows NLB cluster.",
     "author": "Stone Co.",
-    "helpMarkDown": "Manages a Windows NLB cluster.",
+    "helpMarkDown": "Manages a Windows NLB cluster in deployment groups agents.",
     "category": "Utility",
     "visibility": [
         "Build",
         "Release"
     ],
     "runsOn": [
-        "Agent",
         "DeploymentGroup"
     ],
     "demands": [],
     "version": {
         "Major": "0",
         "Minor": "2",
-        "Patch": "0"
+        "Patch": "1"
     },
     "minimumAgentVersion": "1.95.0",
-    "instanceNameFormat": "Manage NLB Cluster $(ClusterName)",
+    "instanceNameFormat": "$(Command) - Manage NLB Cluster",
     "inputs": [{
             "name": "Command",
             "type": "pickList",
@@ -38,9 +37,9 @@
             "name": "NodeName",
             "type": "string",
             "label": "Node Name",
-            "defaultValue": "",
+            "defaultValue": "$(Agent.MachineName)",
             "required": true,
-            "helpMarkDown": "The IP/DNS name of the node being managed.",
+            "helpMarkDown": "The FQDN/IP/DNS name of the node being managed.",
             "visibleRule": "Command = StopClusterNode || Command = StartClusterNode"
         },
         {
